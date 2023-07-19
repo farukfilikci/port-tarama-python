@@ -1,25 +1,26 @@
-import hashlib
+import socket
 
-def hash_password(password):
-    hashed_password = hashlib.sha256(password.encode()).hexdigest()
-    return hashed_password
+def port_scan(target_host, target_ports):
+    for port in target_ports:
+        # Yeni bir soket oluştur
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        
+        # Belirtilen porta bağlanmayı dene
+        result = sock.connect_ex((target_host, port))
+        
+        if result == 0:
+            print(f"Port {port}: Açık")
+        else:
+            print(f"Port {port}: Kapalı")
+        
+        # Soketi kapat
+        sock.close()
 
-def check_password_complexity(password):
-    length = len(password)
-    has_upper = any(char.isupper() for char in password)
-    has_lower = any(char.islower() for char in password)
-    has_digit = any(char.isdigit() for char in password)
-    has_special = any(not char.isalnum() for char in password)
+# Kullanıcıdan hedef IP adresini al
+target_host = input("Hedef IP adresini girin: ")
 
-    if length >= 8 and has_upper and has_lower and has_digit and has_special:
-        print("password safe")
-    else:
-        print("password not safe")
+# Kullanıcıdan hedef portları al
+target_ports = input("Taranacak portları virgülle ayırarak girin: ").split(",")
 
-def main():
-    password = input("please enter your password: ")
-    hashed_password = hash_password(password)
-    check_password_complexity(password)
-
-if __name__ == "__main__":
-    main()
+# Port taramasını başlat
+port_scan(target_host, target_ports)
